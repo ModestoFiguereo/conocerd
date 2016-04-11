@@ -2,12 +2,14 @@
   "name": "conocerd.do",
   "version": "0.0.1",
   "description": "conocerd.do website code.",
-  "main": "app.js",
+  "main": ".tmp/server/app.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node .tmp/server/app",
+    "start-modestly": "npm run ship && npm start",
+    "ship": "gulp ship"
   },
   "repository": {
     "type": "git",
@@ -24,5 +26,29 @@
   "bugs": {
     "url": "https://github.com/ModestoFiguereo/conocerd/issues"
   },
-  "homepage": "https://github.com/ModestoFiguereo/conocerd#readme"
+  "homepage": "https://github.com/ModestoFiguereo/conocerd#readme",
+  "dependencies": {
+    "ascii-art": "0.0.2-alpha",
+    "rename": "^1.0.3",
+    "shell": "^0.3.2"
+  },
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "babel-eslint": "^4.1.1",
+    "babel-runtime": "^5.8.24",
+    "eslint": "^2.7.0",
+    "eslint-config-airbnb": "^6.2.0",
+    "eslint-plugin-react": "^4.3.0",
+    "faucet": "0.0.1",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^5.2.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-eslint": "^2.0.0",
+    "gulp-minify": "0.0.7",
+    "gulp-mocha": "^2.2.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-shell": "^0.5.2",
+    "gulp-util": "^3.0.7",
+    "rimraf": "^2.5.2"
+  }
 }
