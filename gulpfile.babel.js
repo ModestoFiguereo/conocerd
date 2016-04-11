@@ -17,34 +17,46 @@ gulp.task('clean-distribution', (done) => {
 });
 
 gulp.task('clean-tmp', (done) => {
-  rimraf(TMP_DIR, done);
+  rimraf(TMP_DIR, () => {});
+  rimraf(`${SOURCE_DIR}/${TMP_DIR}`, done);
 });
 
 const CSS_FILES = `${CSS_DIR}/**/*.css`;
-gulp.task('minify-css', () => gulp
-  .src(CSS_FILES)
-  .pipe(concat('conocerd.min.css'))
+gulp.task('concat-css', () => gulp
+  .src(CSS_FILES, { base: CSS_DIR })
+  .pipe(concat('conocerd.css'))
   .pipe(minify())
-  .pipe(gulp.dest(CSS_FILES))
+  .pipe(gulp.dest(`${SOURCE_DIR}/.tmp`))
 );
 
-const JS_FILES = `${JS_DIR}/**/*.css`;
-gulp.task('minify-js', () => gulp
-  .src(JS_FILES)
-  .pipe(concat('conocerd.min.js'))
+const JS_FILES = `${JS_DIR}/**/*.js`;
+gulp.task('concat-js', () => gulp
+  .src(JS_FILES, { base: JS_DIR })
+  .pipe(concat('conocerd.js'))
   .pipe(minify())
-  .pipe(gulp.dest(JS_FILES))
+  .pipe(gulp.dest(`${SOURCE_DIR}/.tmp`))
+);
+
+gulp.task('minify-css', ['concat-css'], () => gulp
+  .src(`${SOURCE_DIR}/.tmp/conocerd.css`, { base: '.tmp' })
+  .pipe(minify())
+  .pipe(gulp.dest(`${SOURCE_DIR}/.tmp`))
+);
+
+gulp.task('minify-js', ['concat-js'], () => gulp
+  .src(`${SOURCE_DIR}/.tmp/conocerd.js`, { base: '.tmp' })
+  .pipe(minify())
+  .pipe(gulp.dest(`${SOURCE_DIR}/.tmp`))
 );
 
 const SOURCE_FILES = []
-  .concat(`${CSS_FILES}/conocerd.min.css`)
-  .concat(`${JS_FILES}/conocerd.min.js`)
+  .concat(`${SOURCE_DIR}/.tmp/**/*`)
   .concat(`${SOURCE_DIR}/img/**/*.js`)
   .concat(`${SOURCE_DIR}/templates/**/*.html`)
   .concat(`${SOURCE_DIR}/index.html`);
 
 gulp.task('build-dist', ['clean-distribution', 'minify-css', 'minify-js'], () => gulp
-  .src(SOURCE_FILES, { base: SOURCE_DIR })
+  .src(SOURCE_FILES)
   .pipe(gulp.dest(DIST_DIR))
 );
 
