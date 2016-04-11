@@ -3,7 +3,7 @@
   this.conocerd.route = this.conocerd.route || {};
   var ns = this.conocerd.route;
 
-  var RouterModes = {
+  ns.RouterModes = {
     HISTORY: 'history',
     HASH: 'hash'
   };
@@ -11,14 +11,14 @@
   ns.Router = (function () {
     var routes = [];
     var root = '/';
-    var mode = RouterModes.HASH;
+    var mode = ns.RouterModes.HASH;
 
     return {
       config: function (options) {
         if (isHistoryModeConfigured(options) && isHistoryAPISupported()) {
-          mode = RouterModes.HISTORY;
+          mode = ns.RouterModes.HISTORY;
         } else {
-          mode = RouterModes.HASH;
+          mode = ns.RouterModes.HASH;
         }
 
         if (options && options.root) {
@@ -28,30 +28,30 @@
         return this;
       },
       getFragment: function () {
-        var fragment = '';
+        if (mode === ns.RouterModes.HISTORY) {
+          var path = decodeURI(location.pathname + location.search);
+          var fragment = removeQueryString(path);
 
-        if (mode === RouterModes.HISTORY) {
-          fragment = decodeURI(location.pathname + location.search);
-          fragment = removeQueryString(fragment);
-          fragment = root !== '/' ? fragment.replace(root, '') : fragment;
-        } else {
-          var match = window.location.href.match(/#(.*)$/);
-          fragment = match ? match[1] : '';
+          if (root !== '/') {
+            return fragment.replace(root, '');
+          }
+
+          return fragment;
         }
 
-        return fragment;
+        return location.hash.replace('#', '');
       },
-      add: function (path, handler) {
-        var index = routes.findIndex(function (route) { return route.path === path; });
+      add: function (routeString, handler) {
+        this.remove(routeString);
+
+        routes.push(createRoute(routeString, handler));
+        return this;
+      },
+      remove: function (route) {
+        var index = routes.findIndex(function (routeObj) { return routeObj.route === route; });
         if (index !== -1) {
           routes.splice(index, 1);
         }
-        routes.push(new Route(path, handler));
-        return this;
-      },
-      remove: function (path) {
-        var index = routes.findIndex(function (route) { return route.path === path; });
-        routes.splice(index, 1);
 
         return this;
       },
@@ -63,11 +63,9 @@
         return this;
       },
       check: function (fragment) {
-        var url = fragment || this.getFragment();
+        var path = fragment || this.getFragment();
         routes.forEach(function (route) {
-          if (route.doesUrlMatch(url)) {
-            route.executeHandler(route.buildHandlerArgumentsForUrl(url));
-          }
+          route.executeIfPathMatch(path);
         });
 
         return this;
@@ -87,50 +85,46 @@
         return this;
       },
       navigate: function (path) {
-        if (mode === RouterModes.HISTORY) {
-          history.pushState(null, null, root + (clearSlashes(path) || ''));
+        if (mode === ns.RouterModes.HISTORY) {
+          history.pushState(null, null, root + clearSlashes(path));
         } else {
-          window.location.href = window.location.href.replace(/#(.*)$/, '') + '#' + (path || '/');
+          location.hash = window.location.hash = path || root;
         }
 
         return this;
       }
     };
 
-    function Route(path, handler) {
-      this.path = path;
-      var params = this.path.match(/:[a-z0-9]+/gi);
+    function createRoute(route, handler) {
+      return {
+        route: route,
+        paramNames: getParamNames(route || root),
+        executeIfPathMatch: function (path) {
+          var self = this;
+          var routeRegExp = buildRouteRegExp(route, self.paramNames);
 
-      if (params && params.length) {
-        params = params.map(function (param) {
-          return param.replace(/:/g, '');
-        });
-      }
+          if (routeRegExp.test(path)) {
+            var values = path.match(routeRegExp) || [];
+            var handlerContext = values.slice(1)
+              .reduce(function (context, value, index) {
+                context.routeParams[self.paramNames[index]] = value;
 
-      var route = buildRouteRegExp(path || '/', params || []);
+                return context;
+              }, { routeParams: {} });
 
-      this.doesUrlMatch = function (url) {
-        return route.test(url);
-      };
-
-      this.buildHandlerArgumentsForUrl = function (url) {
-        var values = url.match(route);
-
-        if (values.length) {
-          return values
-          .slice(1)
-          .reduce(function (args, value, index) {
-            args[params[index]] = value;
-            return args;
-          }, {});
+            handler.apply(handlerContext);
+          }
         }
-
-        return {};
       };
+    }
 
-      this.executeHandler = function (args) {
-        handler.apply({}, [args]);
-      };
+    function getParamNames(routeString) {
+      var paramRegExp = /:[a-z0-9]+/gi;
+      var paramNames = routeString.match(paramRegExp) || [];
+
+      return paramNames.map(function (param) {
+        return param.replace(/:/g, '');
+      });
     }
 
     function buildRouteRegExp(path, params) {
@@ -143,7 +137,7 @@
   }());
 
   function isHistoryModeConfigured(options) {
-    return options && options.mode && options.mode === RouterModes.HISTORY;
+    return options && options.mode && options.mode === ns.RouterModes.HISTORY;
   }
 
   function isHistoryAPISupported() {

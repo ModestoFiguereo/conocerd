@@ -10,8 +10,8 @@
     .add('/about', function () {
       console.log('about');
     })
-    .add('/products/:id/edit/:value', function (params) {
-      console.log('products', params);
+    .add('/products/:id/edit/:value', function () {
+      console.log('products', this.routeParams);
     })
     .listen();
 
