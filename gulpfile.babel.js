@@ -29,7 +29,9 @@ gulp.task('concat-css', () => gulp
   .pipe(gulp.dest(`${SOURCE_DIR}/.tmp`))
 );
 
-const JS_FILES = `${JS_DIR}/**/*.js`;
+const JS_FILES = []
+  .concat(`${JS_DIR}/conocerd.router.js`)
+  .concat(`${JS_DIR}/**/*.js`);
 gulp.task('concat-js', () => gulp
   .src(JS_FILES, { base: JS_DIR })
   .pipe(concat('conocerd.js'))
