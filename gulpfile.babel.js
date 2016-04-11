@@ -1,3 +1,4 @@
+/*eslint-disable */
 import gulp from 'gulp';
 import babel from 'gulp-babel';
 import rename from 'gulp-rename';
@@ -25,26 +26,19 @@ const CSS_FILES = `${CSS_DIR}/**/*.css`;
 gulp.task('concat-css', () => gulp
   .src(CSS_FILES, { base: CSS_DIR })
   .pipe(concat('conocerd.css'))
-  .pipe(minify())
   .pipe(gulp.dest(`${SOURCE_DIR}/.tmp`))
 );
+
 
 const JS_FILES = `${JS_DIR}/**/*.js`;
 gulp.task('concat-js', () => gulp
   .src(JS_FILES, { base: JS_DIR })
   .pipe(concat('conocerd.js'))
-  .pipe(minify())
   .pipe(gulp.dest(`${SOURCE_DIR}/.tmp`))
 );
 
-gulp.task('minify-css', ['concat-css'], () => gulp
-  .src(`${SOURCE_DIR}/.tmp/conocerd.css`, { base: '.tmp' })
-  .pipe(minify())
-  .pipe(gulp.dest(`${SOURCE_DIR}/.tmp`))
-);
-
-gulp.task('minify-js', ['concat-js'], () => gulp
-  .src(`${SOURCE_DIR}/.tmp/conocerd.js`, { base: '.tmp' })
+gulp.task('minify', ['concat-css', 'concat-js'], () => gulp
+  .src(`${SOURCE_DIR}/.tmp/*`)
   .pipe(minify())
   .pipe(gulp.dest(`${SOURCE_DIR}/.tmp`))
 );
@@ -55,7 +49,7 @@ const SOURCE_FILES = []
   .concat(`${SOURCE_DIR}/templates/**/*.html`)
   .concat(`${SOURCE_DIR}/index.html`);
 
-gulp.task('build-dist', ['clean-distribution', 'minify-css', 'minify-js'], () => gulp
+gulp.task('build-dist', ['clean-distribution', 'minify'], () => gulp
   .src(SOURCE_FILES)
   .pipe(gulp.dest(DIST_DIR))
 );
