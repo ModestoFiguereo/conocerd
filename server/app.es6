@@ -1,3 +1,4 @@
+/*eslint-disable */
 import ascii from 'ascii-art';
 import koa from 'koa';
 import serve from 'koa-static';
