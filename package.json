@@ -1,0 +1,28 @@
+{
+  "name": "conocerd.do",
+  "version": "0.0.1",
+  "description": "conocerd.do website code.",
+  "main": "app.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ModestoFiguereo/conocerd.git"
+  },
+  "keywords": [
+    "conocerd",
+    "website",
+    "república",
+    "dominicana"
+  ],
+  "author": "Modesto Figuereo Fernandez <figuereo.fernandez.modesto@gmail.com> (http://www.modestofiguereo.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ModestoFiguereo/conocerd/issues"
+  },
+  "homepage": "https://github.com/ModestoFiguereo/conocerd#readme"
+}
