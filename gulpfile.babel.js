@@ -31,6 +31,7 @@ gulp.task('concat-css', () => gulp
 
 const JS_FILES = []
   .concat(`${JS_DIR}/conocerd.router.js`)
+  .concat(`${JS_DIR}/conocerd.templates.js`)
   .concat(`${JS_DIR}/**/*.js`);
 
 gulp.task('concat-js', () => gulp
