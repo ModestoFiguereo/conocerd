@@ -29,6 +29,7 @@
   "homepage": "https://github.com/ModestoFiguereo/conocerd#readme",
   "dependencies": {
     "ascii-art": "0.0.2-alpha",
+    "bower": "^1.7.9",
     "rename": "^1.0.3",
     "shell": "^0.3.2"
   },
