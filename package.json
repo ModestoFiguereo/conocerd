@@ -8,8 +8,8 @@
   },
   "scripts": {
     "start": "node .tmp/server/app",
-    "start-modestly": "npm run ship && npm start",
-    "ship": "gulp ship"
+    "start-modestly": "npm run deploy && npm start",
+    "deploy": "gulp deploy"
   },
   "repository": {
     "type": "git",
@@ -30,8 +30,10 @@
   "dependencies": {
     "ascii-art": "0.0.2-alpha",
     "bower": "^1.7.9",
+    "del": "^2.2.0",
     "rename": "^1.0.3",
-    "shell": "^0.3.2"
+    "shell": "^0.3.2",
+    "yargs": "^4.6.0"
   },
   "devDependencies": {
     "babel": "^5.8.23",
@@ -51,6 +53,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-shell": "^0.5.2",
     "gulp-util": "^3.0.7",
-    "rimraf": "^2.5.2"
+    "rimraf": "^2.5.2",
+    "run-sequence": "^1.1.5"
   }
 }
