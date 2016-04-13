@@ -69,7 +69,7 @@ gulp.task('concat-js', ['lint'], () => gulp
   .pipe(gulp.dest(`${SOURCE_DIR}/.tmp`))
 );
 
-gulp.task('concat', ['clean-src-tmp', 'concat-css', 'concat-js'], (done) => done());
+gulp.task('concat', ['concat-css', 'concat-js'], (done) => done());
 
 /*
  * Minify conocerd.css and conocerd.js, and
