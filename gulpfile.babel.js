@@ -5,7 +5,6 @@ import rename from 'gulp-rename';
 import concat from 'gulp-concat';
 import minifyjs from 'gulp-minify';
 import minifycss from 'gulp-cssmin';
-import cleanCSS from 'gulp-clean-css';
 import eslint from 'gulp-eslint';
 import rimraf from 'rimraf';
 
@@ -40,6 +39,7 @@ const SERVER_FILES = `${SERVER_DIR}/**/*.es6`;
 gulp.task('clean-build', (done) => rimraf(BUILD_DIR, done));
 gulp.task('clean-src-tmp', (done) => rimraf(`${SOURCE_DIR}/${TMP_DIR}`, done));
 gulp.task('clean-server-tmp', (done) => rimraf(`${TMP_DIR}`, done));
+
 /*
  * Ensure js files have no syntax errors and
  * complay with code standards.
@@ -92,7 +92,6 @@ gulp.task('minify-js', () => gulp
 );
 
 gulp.task('minify', ['concat', 'minify-css', 'minify-js'], (done) => done());
-
 
 /*
  * Build app. Get all files that matter into `dist/` folder.
