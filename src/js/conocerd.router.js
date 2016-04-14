@@ -129,7 +129,7 @@
 
     function buildRouteRegExp(path, params) {
       var routeString = params.reduce(function (pathToWorkWith, param) {
-        return pathToWorkWith.replace(':' + param, '(.*)');
+        return pathToWorkWith.replace(':' + param, '(.*[^\/])');
       }, path);
 
       if (routeString[0] === '/') {
