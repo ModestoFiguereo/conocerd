@@ -32,7 +32,7 @@ $ npm run start-modestly
 Finally open the webpage on localhost:3000.
 
 ## Automated tasks
-Gulp is used to tasks on `conocerd` project.
+Gulp is used to automate tasks on `conocerd` project.
 
 ### `gulp clean`
 > Clean tmp files and folders and build.
