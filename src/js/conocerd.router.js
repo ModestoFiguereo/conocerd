@@ -132,7 +132,17 @@
         return pathToWorkWith.replace(':' + param, '(.*)');
       }, path);
 
-      return new RegExp('^' + routeString.replace('/', '/*') + '$');
+      if (routeString[0] === '/') {
+        routeString = routeString.replace('/', '/*');
+      }
+
+      if (routeString[routeString.length - 1] === '/') {
+        routeString = routeString + '*';
+      } else {
+        routeString = routeString + '/*';
+      }
+
+      return new RegExp('^' + routeString + '$');
     }
   }());
 

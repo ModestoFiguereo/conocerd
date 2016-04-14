@@ -10,12 +10,17 @@
     })
     .add('/about', function () {
       TemplateManager.getTemplate('/about.html', function (template) {
-        jQuery('body').html(template.html);
-        console.log('about');
+        jQuery('body').html(template.compile({
+          title: 'About',
+          body: 'We\'re conocerd.com!'
+        }));
       });
     })
-    .add('/products/:id/edit/:value', function () {
-      console.log('products', this.routeParams);
+    .add('/products/:id/', function () {
+      var params = this.routeParams;
+      TemplateManager.getTemplate('/product.html', function (template) {
+        jQuery('body').html(template.compile(params));
+      });
     })
     .listen();
 
