@@ -1,4 +1,4 @@
-(function (jQuery) {
+(function (jQuery, Handlebars) {
   this.conocerd = this.conocerd || {};
   this.conocerd.views = this.conocerd.views || {};
   var ns = this.conocerd.views;
@@ -13,8 +13,8 @@
         if (template) {
           callback(template);
         } else {
-          jQuery.get(url).done(function (html) {
-            template = new Template(url, html);
+          jQuery.get(url).done(function (source) {
+            template = new Template(url, source);
 
             templates.push(template);
             callback(template);
@@ -24,8 +24,13 @@
     };
   }());
 
-  function Template(url, html) {
+  function Template(url, source) {
     this.url = url;
-    this.html = html;
+    this.source = source;
   }
-}(window.$));
+
+  Template.prototype.compile = function (context) {
+    var template = Handlebars.compile(this.source);
+    return template(context);
+  };
+}(window.$, window.Handlebars));
