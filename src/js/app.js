@@ -25,5 +25,5 @@
     .listen();
 
   // returning the user to the initial state
-  Router.navigate(Router.getFragment());
+  Router.navigate(Router.getCurrentPath());
 }(window.$));
