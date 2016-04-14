@@ -29,7 +29,7 @@ Or you can accomplish the last two steps by typing this command:
 $ npm run start-modestly
 ```
 
-Finally run gulp and the webpage will open on localhost:3000 if the page stays blank after a while just close the browser tab and open the page again.
+Finally open the webpage on localhost:3000.
 
 ## Automated tasks
 Gulp is used to tasks on `conocerd` project.
