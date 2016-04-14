@@ -8,7 +8,6 @@ import minifycss from 'gulp-cssmin';
 import eslint from 'gulp-eslint';
 import rimraf from 'rimraf';
 import sequence from 'run-sequence';
-import {argv as args} from 'yargs';
 import del from 'del';
 
 const TMP_DIR = '.tmp';
