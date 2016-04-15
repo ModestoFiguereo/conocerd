@@ -6,7 +6,7 @@
   var ROOT = '/';
   var PARAM_PREFIX = ':';
   var PARAM_NAME_REGEXP = /:[a-z0-9]+/gi;
-  var PATH_PARAM_REGEXP_STRING = '([^\/]+?)';
+  var PATH_PARAM_REGEXP_STRING = '([^/]+?)';
   var ROUTER_MODES = {
     HISTORY: 'history',
     HASH: 'hash'
@@ -14,64 +14,72 @@
 
   ns.RouterModes = ROUTER_MODES;
 
-  ns.Router = (function () {
+  var Router = (function () {
     var routes = [];
+    var defaultHandler = null;
     var mode = ROUTER_MODES.HASH;
 
     return {
       config: function (options) {
-        if (isHistoryModeConfigured(options) && isHistoryAPISupported()) {
-          mode = ns.RouterModes.HISTORY;
+        var opts = options || {};
+        if (isHistoryModeConfigured(opts) && isHistoryAPISupported()) {
+          mode = ROUTER_MODES.HISTORY;
         } else {
-          mode = ns.RouterModes.HASH;
+          mode = ROUTER_MODES.HASH;
         }
 
-        if (options && options.root) {
-          ROOT = '/' + clearSlashes(options.root) + '/';
+        if (opts.root) {
+          ROOT = '/' + clearSlashes(opts.root) + '/';
         }
 
         return this;
       },
       getCurrentPath: function () {
-        if (mode === ns.RouterModes.HISTORY) {
-          var path = decodeURI(location.pathname + location.search);
-          var fragment = removeQueryString(path);
+        if (mode === ROUTER_MODES.HISTORY) {
+          var path = location.pathname + location.search;
+          path = decodeURI(path);
+          path = removeQueryString(path);
+          path = (ROOT !== '/') ? path.replace(ROOT, '') : path;
 
-          if (ROOT !== '/') {
-            return fragment.replace(ROOT, '');
-          }
-
-          return fragment;
+          return path;
         }
 
         return location.hash.replace('#', '');
       },
       add: function (path, handler) {
         this.remove(path);
-
         routes.push(createRoute(path, handler));
+
         return this;
       },
+      otherwise: function (handler) {
+        defaultHandler = handler;
+      },
       remove: function (path) {
-        var index = routes.findIndex(function (route) { return route.path === path; });
+        var index = routes.findIndex(function (route) {
+          return route.path === path;
+        });
+
         if (index !== -1) {
           routes.splice(index, 1);
         }
 
         return this;
       },
-      flush: function () {
-        routes = [];
-        mode = null;
-        ROOT = '/';
-
-        return this;
-      },
       check: function (fragment) {
+        var exist = false;
+
         var path = fragment || this.getCurrentPath();
         routes.forEach(function (route) {
-          route.executeHandlerIfPathMatch(path);
+          if (route.match(path)) {
+            exist = true;
+            route.execute();
+          }
         });
+
+        if (!exist && defaultHandler) {
+          defaultHandler.apply({});
+        }
 
         return this;
       },
@@ -90,43 +98,51 @@
         return this;
       },
       navigate: function (path) {
-        if (mode === ROUTER_MODES.HISTORY) {
-          history.pushState(null, null, ROOT + clearSlashes(path));
-        } else {
-          location.hash = path || ROOT;
-        }
+        go(mode, path);
+
+        return this;
+      },
+      flush: function () {
+        routes = [];
+        mode = null;
+        ROOT = '/';
 
         return this;
       }
     };
   }());
 
+  // returning the user to the initial state
+  Router.navigate(Router.getCurrentPath()).listen();
+  ns.Router = Router;
+
+
+  function isHistoryModeConfigured(options) {
+    return options && options.mode && options.mode === ROUTER_MODES.HISTORY;
+  }
+
+  function isHistoryAPISupported() {
+    return !!(history.pushState);
+  }
+
   function createRoute(path, handler) {
+    var paramNames = getParamNamesFromPath(path || ROOT);
+    var pathRegexp = pathToRegexp(path, paramNames);
+
     return {
       path: path,
-      paramNames: getParamNamesFromPath(path || ROOT),
-      executeHandlerIfPathMatch: function (currentPath) {
-        var self = this;
-        var pathRegExp = pathToRegexp(path, self.paramNames);
-
-        if (pathRegExp.test(currentPath)) {
-          var values = currentPath.match(pathRegExp) || [];
-          var handlerContext = values.slice(1)
-          .reduce(function (context, value, index) {
-            context.routeParams = context.routeParams || {};
-            context.routeParams[self.paramNames[index]] = value;
-
-            return context;
-          }, {});
-
-          handler.apply(handlerContext);
-        }
+      match: function (currentPath) {
+        return pathRegexp.test(currentPath);
+      },
+      execute: function () {
+        var context = buildRouteContext(paramNames, pathRegexp);
+        handler.apply(context);
       }
     };
   }
 
   function getParamNamesFromPath(path) {
-    var paramNames = (path.match(PARAM_NAME_REGEXP) || []).map(function (paramName) {
+    var paramNames = match(path, PARAM_NAME_REGEXP).map(function (paramName) {
       return paramName.replace(/:/g, '');
     });
 
@@ -145,12 +161,36 @@
     return path.replace(PARAM_PREFIX + param, PATH_PARAM_REGEXP_STRING);
   }
 
-  function isHistoryModeConfigured(options) {
-    return options && options.mode && options.mode === ROUTER_MODES.HISTORY;
+  function buildRouteContext(paramNames, pathRegexp) {
+    return {
+      hash: location.hash,
+      host: location.host,
+      hostname: location.hostname,
+      href: location.href,
+      origin: location.origin,
+      pathname: location.path,
+      port: location.port,
+      protocol: location.protocol,
+      params: match(Router.getCurrentPath(), pathRegexp)
+        .slice(1)
+        .reduce(function (params, value, index) {
+          params[paramNames[index]] = value;
+
+          return params;
+        }, {})
+    };
   }
 
-  function isHistoryAPISupported() {
-    return !!(history.pushState);
+  function match(string, regexp) {
+    return string.match(regexp) || [];
+  }
+
+  function go(mode, path) {
+    if (mode === ROUTER_MODES.HISTORY) {
+      history.pushState(null, null, ROOT + clearSlashes(path));
+    } else {
+      location.hash = ROOT + clearSlashes(path);
+    }
   }
 
   function clearSlashes(path) {

@@ -9,6 +9,7 @@
       console.log('default');
     })
     .add('/about', function () {
+      console.log(this);
       TemplateManager.getTemplate('/about.html', function (template) {
         jQuery('body').html(template.compile({
           title: 'About',
@@ -17,13 +18,10 @@
       });
     })
     .add('/products/:id/', function () {
-      var params = this.routeParams;
+      console.log(this);
+      var params = this.params;
       TemplateManager.getTemplate('/product.html', function (template) {
         jQuery('body').html(template.compile(params));
       });
-    })
-    .listen();
-
-  // returning the user to the initial state
-  Router.navigate(Router.getCurrentPath());
+    });
 }(window.$));
