@@ -16,7 +16,7 @@
 
   var Router = (function () {
     var routes = [];
-    var defaultHandler = null;
+    var defaultRoute = null;
     var mode = ROUTER_MODES.HASH;
 
     return {
@@ -53,7 +53,7 @@
         return this;
       },
       otherwise: function (handler) {
-        defaultHandler = handler;
+        defaultRoute = createRoute('default', handler);
       },
       remove: function (path) {
         var index = routes.findIndex(function (route) {
@@ -77,8 +77,8 @@
           }
         });
 
-        if (!exist && defaultHandler) {
-          defaultHandler.apply({});
+        if (!exist && defaultRoute) {
+          defaultRoute.execute();
         }
 
         return this;
@@ -171,6 +171,7 @@
       pathname: location.path,
       port: location.port,
       protocol: location.protocol,
+      navigate: Router.navigate,
       params: match(Router.getCurrentPath(), pathRegexp)
         .slice(1)
         .reduce(function (params, value, index) {

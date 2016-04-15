@@ -23,5 +23,14 @@
       TemplateManager.getTemplate('/product.html', function (template) {
         jQuery('body').html(template.compile(params));
       });
+    })
+    .add('/404', function () {
+      var params = this.params;
+      TemplateManager.getTemplate('/404.html', function (template) {
+        jQuery('body').html(template.compile(params));
+      });
+    })
+    .otherwise(function () {
+      this.navigate('404');
     });
 }(window.$));
