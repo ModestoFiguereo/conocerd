@@ -1,7 +1,6 @@
-(function (jQuery, Handlebars) {
-  this.conocerd = this.conocerd || {};
-  this.conocerd.views = this.conocerd.views || {};
-  var ns = this.conocerd.views;
+(function (namespace, jQuery) {
+  var ns = namespace('conocerd.views');
+  var Template = namespace.import('conocerd.views').Template;
 
   ns.TemplateManager = (function () {
     var templates = [];
@@ -23,14 +22,4 @@
       }
     };
   }());
-
-  function Template(url, source) {
-    this.url = url;
-    this.source = source;
-  }
-
-  Template.prototype.compile = function (context) {
-    var template = Handlebars.compile(this.source);
-    return template(context);
-  };
-}(window.$, window.Handlebars));
+}(window.namespace, window.$));

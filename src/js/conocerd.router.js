@@ -1,15 +1,13 @@
-(function () {
-  this.conocerd = this.conocerd || {};
-  this.conocerd.route = this.conocerd.route || {};
-  var ns = this.conocerd.route;
+(function (namespace) {
+  var ns = namespace('conocerd.route');
 
   var ROOT = '/';
   var PARAM_PREFIX = ':';
   var PARAM_NAME_REGEXP = /:[a-z0-9]+/gi;
   var PATH_PARAM_REGEXP_STRING = '([^/]+?)';
   var ROUTER_MODES = {
-    HISTORY: 'history',
-    HASH: 'hash'
+    HISTORY: 'HISTORY',
+    HASH: 'HASH'
   };
 
   ns.RouterModes = ROUTER_MODES;
@@ -22,10 +20,12 @@
     return {
       config: function (options) {
         var opts = options || {};
-        if (isHistoryModeConfigured(opts) && isHistoryAPISupported()) {
-          mode = ROUTER_MODES.HISTORY;
-        } else {
-          mode = ROUTER_MODES.HASH;
+
+        mode = ROUTER_MODES[opts.mode] || ROUTER_MODES.HASH;
+        if (mode === ROUTER_MODES.HISTORY) {
+          if (historyAPIIsNotSupported()) {
+            mode = ROUTER_MODES.HASH;
+          }
         }
 
         if (opts.root) {
@@ -116,13 +116,8 @@
   Router.navigate(Router.getCurrentPath()).listen();
   ns.Router = Router;
 
-
-  function isHistoryModeConfigured(options) {
-    return options && options.mode && options.mode === ROUTER_MODES.HISTORY;
-  }
-
-  function isHistoryAPISupported() {
-    return !!(history.pushState);
+  function historyAPIIsNotSupported() {
+    return typeof history.pushState !== 'undefined';
   }
 
   function createRoute(path, handler) {
@@ -203,4 +198,4 @@
   function removeQueryString(fragment) {
     return fragment.replace(/\?(.*)$/, '');
   }
-}());
+}(window.namespace));

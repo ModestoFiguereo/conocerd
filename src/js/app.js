@@ -1,8 +1,7 @@
-(function (jQuery) {
-  this.conocerd = this.conocerd || {};
+(function (namespace, jQuery) {
+  var Router = namespace.import('conocerd.route').Router;
+  var TemplateManager = namespace.import('conocerd.views').TemplateManager;
 
-  var Router = this.conocerd.route.Router;
-  var TemplateManager = this.conocerd.views.TemplateManager;
   Router
     .config({ mode: 'hash' })
     .add('/', function () {
@@ -33,4 +32,4 @@
     .otherwise(function () {
       this.navigate('404');
     });
-}(window.$));
+}(window.namespace, window.$));

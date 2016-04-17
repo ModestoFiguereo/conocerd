@@ -29,8 +29,10 @@ const CSS_FILES = `${CSS_DIR}/**/*.css`;
 
 const JS_DIR = `${SOURCE_DIR}/js`;
 const JS_FILES = []
+  .concat(`${JS_DIR}/namespace.js`)
   .concat(`${JS_DIR}/conocerd.router.js`)
-  .concat(`${JS_DIR}/conocerd.templates.js`)
+  .concat(`${JS_DIR}/conocerd.template.js`)
+  .concat(`${JS_DIR}/conocerd.template-manager.js`)
   .concat(`${JS_DIR}/**/*.js`);
 
 const BUILD_DIR = 'dist';
