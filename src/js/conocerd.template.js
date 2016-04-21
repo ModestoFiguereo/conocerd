@@ -1,5 +1,6 @@
-(function (namespace, Handlebars) {
+(function (namespace) {
   var ns = namespace('conocerd.views');
+  var Handlebars = namespace.import('Handlebars');
 
   function Template(url, source) {
     this.url = url;
@@ -12,4 +13,4 @@
   };
 
   ns.Template = Template;
-}(window.namespace, window.Handlebars));
+}(window.namespace));

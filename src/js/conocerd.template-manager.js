@@ -1,6 +1,7 @@
-(function (namespace, jQuery) {
+(function (namespace) {
   var ns = namespace('conocerd.views');
   var Template = namespace.import('conocerd.views').Template;
+  var $ = namespace.import('jQuery');
 
   ns.TemplateManager = (function () {
     var templates = [];
@@ -12,7 +13,7 @@
         if (template) {
           callback(template);
         } else {
-          jQuery.get(url).done(function (source) {
+          $.get(url).done(function (source) {
             template = new Template(url, source);
 
             templates.push(template);
@@ -22,4 +23,4 @@
       }
     };
   }());
-}(window.namespace, window.$));
+}(window.namespace));
